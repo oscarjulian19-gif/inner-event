@@ -1,0 +1,62 @@
+.switcher {
+    position: relative;
+    display: inline-block;
+}
+
+.trigger {
+    background: hsl(var(--bg-surface) / 0.5);
+    border: 1px solid hsl(var(--border-glass));
+    color: hsl(var(--text-main));
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.trigger:hover {
+    background: hsl(var(--bg-surface));
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: hsl(var(--bg-surface));
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border-glass));
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    z-index: 100;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.option {
+    background: transparent;
+    border: none;
+    color: hsl(var(--text-muted));
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.option:hover {
+    background: hsl(var(--surface-active));
+    color: hsl(var(--text-main));
+}
+
+.option.active {
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.1);
+}

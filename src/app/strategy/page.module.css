@@ -1,0 +1,157 @@
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: hsl(var(--primary));
+    /* 55% Corporate Blue */
+    font-weight: 800;
+    /* Authority */
+    text-transform: uppercase;
+}
+
+.section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    /* Glassmorphism applied via global class, but specific spacing here */
+}
+
+.sectionTitle {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    color: hsl(var(--accent));
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.purposeDisplay {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    background: white;
+    color: hsl(var(--text-main));
+    /* Explicit Dark Text */
+    background-clip: border-box;
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    border: 1px solid hsl(var(--border-glass));
+    margin-top: 1rem;
+}
+
+.formRow {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.megaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.megaCard {
+    background: white;
+    /* 25% Pure White Surface */
+    border: 1px solid hsl(var(--border-glass));
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.megaCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+    border-color: hsl(var(--primary) / 0.5);
+}
+
+.megaHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid hsl(var(--border-glass));
+}
+
+.megaTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: hsl(var(--text-main));
+    /* Dark Navy for readability */
+}
+
+.megaDate {
+    font-size: 0.85rem;
+    color: hsl(var(--text-muted));
+    background: hsl(var(--bg-app));
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+}
+
+.objectivesList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.objectiveItem {
+    position: relative;
+    padding-left: 1rem;
+    border-left: 2px solid hsl(var(--primary) / 0.3);
+}
+
+.objectiveTitle {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: hsl(var(--text-main));
+}
+
+.krList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.krItem {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: hsl(var(--text-main));
+    /* Darker text */
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+}
+
+.krTarget {
+    font-family: monospace;
+    color: hsl(var(--accent));
+}
+
+.addButton {
+    background: hsl(var(--text-main));
+    /* Black/Dark Navy */
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.addButton:hover {
+    background: black;
+    transform: translateY(-1px);
+}
