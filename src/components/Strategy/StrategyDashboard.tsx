@@ -24,7 +24,6 @@ export default function StrategyDashboard({ purpose, areaPurpose, analysisData }
         <div className={styles.container}>
             <div className="glass-panel" style={{ padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src="/pragma-logo.png" alt="Pragma" style={{ height: '50px', objectFit: 'contain' }} />
                     <h1 className={styles.header} style={{
                         fontSize: '1.5rem',
                         color: 'hsl(var(--primary))',

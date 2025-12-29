@@ -83,7 +83,9 @@ export default function HomePageClient({ purpose }) {
 
             {/* Header Section - Wrapped in White Panel for Visibility & "Tranquility" */}
             <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center', width: '100%', maxWidth: '800px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center' }}>
-                <img src="/pragma-logo.png" alt="PRAGMA - Donde la estrategia pasa" style={{ maxWidth: '400px', width: '100%', height: 'auto' }} />
+                <Link href="/" style={{ display: 'block', width: '100%' }}>
+                    <img src="/pragma-logo.png" alt="PRAGMA - Donde la estrategia pasa" style={{ maxWidth: '400px', width: '100%', height: 'auto' }} />
+                </Link>
             </div>
 
             {/* STRATEGY CASCADE DASHBOARD */}

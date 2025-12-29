@@ -42,6 +42,9 @@ export default function LoginPage() {
         }}>
             <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '3rem' }}>
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                        <img src="/pragma-logo.png" alt="Pragma" style={{ height: '40px', width: 'auto' }} />
+                    </div>
                     <h1 style={{
                         fontSize: '2rem',
                         marginBottom: '0.5rem',

@@ -34,17 +34,19 @@ export default function NavBar() {
     return (
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             {/* Home / Command Center Link */}
+            {/* Home / Command Center Link */}
             <Link href="/" style={{
-                textDecoration: 'none',
-                fontSize: '1.2rem',
-                padding: '0.5rem',
-                borderRadius: '50%',
-                background: 'hsl(var(--bg-surface))',
-                border: '1px solid hsl(var(--border-glass))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginRight: '1rem'
-            }} title="Command Center">
-                🏠
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: '1.5rem',
+                transition: 'transform 0.2s ease'
+            }} title="Inicio / Command Center">
+                <img
+                    src="/pragma-logo.png"
+                    alt="Pragma Logo"
+                    style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+                />
             </Link>
 
             {/* 1. Gestionar Estrategia (Strategy) - Purple */}
