@@ -70,12 +70,21 @@ export default async function PlanningPage() {
         operationalEfficiency: 92
     };
 
+    const organizationalValues = await prisma.organizationalValue.findMany({
+        where: { tenantId }
+    });
+
     return (
         <div style={{ paddingBottom: '2rem' }}>
             {/* <StrategyTabs /> Removed as per user request to focus on Purpose */}
-            {/* <StrategyCascade purpose={purpose} /> Removed to clear "what is above" */}
+            {/* <StrategyCascade purpose={purpose} /> Moved inside Dashboard for Header Hierarchy */}
             <div style={{ marginTop: '1rem' }}>
-                <StrategyDashboard purpose={purpose} areaPurpose={areaPurpose} analysisData={analysisData} />
+                <StrategyDashboard
+                    purpose={purpose}
+                    areaPurpose={areaPurpose}
+                    analysisData={analysisData}
+                    organizationalValues={organizationalValues}
+                />
             </div>
         </div>
     );

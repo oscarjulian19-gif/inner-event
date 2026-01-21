@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import PrismaAvatar from '@/components/PrismaAvatar';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 type Props = {
     initialValue: string;
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export default function EditableText({ initialValue, onSave, className, multiline, style, placeholder }: Props) {
+    const { locale } = useLanguage();
     const [isEditing, setIsEditing] = useState(false);
     const [value, setValue] = useState(initialValue);
     const [isSaving, setIsSaving] = useState(false);
@@ -27,7 +30,11 @@ export default function EditableText({ initialValue, onSave, className, multilin
             const res = await fetch('/api/ai/refine-text', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: value, type: 'general' }) // Can make type dynamic prop later
+                body: JSON.stringify({
+                    text: value,
+                    type: 'general',
+                    language: locale // Pass current language
+                })
             });
             const data = await res.json();
             if (data.suggestion) {
@@ -127,17 +134,17 @@ export default function EditableText({ initialValue, onSave, className, multilin
             {isSaving && <span style={{ marginLeft: '8px', fontSize: '0.8em' }}>💾</span>}
 
             {/* AI Guide Trigger */}
-            <button
+            <div
                 onClick={(e) => {
-                    e.stopPropagation(); // Don't trigger edit mode immediately
+                    e.stopPropagation();
                     handleAskAI();
                 }}
-                className="absolute -right-8 top-0 opacity-50 hover:opacity-100 transition-opacity text-primary hover:scale-110 transform duration-200"
-                title="Pedir sugerencia a IA"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem' }}
+                className="absolute -right-8 top-0 opacity-0 group-hover:opacity-100 transition-opacity transform duration-200"
+                style={{ cursor: 'pointer' }}
+                title="Sugerencia IA"
             >
-                ✨
-            </button>
+                <PrismaAvatar size={24} emotion={isLoadingAI ? 'thinking' : 'happy'} />
+            </div>
 
             {/* AI Suggestion Popover */}
             {suggestion && (

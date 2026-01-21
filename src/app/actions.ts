@@ -382,3 +382,35 @@ export async function createStrategicConversation(formData: FormData) {
     });
     revalidatePath('/emergent');
 }
+
+// --- Organizational Values ---
+
+export async function createOrganizationalValue(formData: FormData) {
+    const statement = formData.get('statement') as string;
+    const cookieStore = await cookies();
+    const tenantId = cookieStore.get('inner_event_tenant_id')?.value;
+
+    if (!tenantId) {
+        throw new Error('No tenant found');
+    }
+
+    if (!statement) {
+        throw new Error('Statement is required');
+    }
+
+    await prisma.organizationalValue.create({
+        data: {
+            statement,
+            tenantId
+        }
+    });
+
+    revalidatePath('/strategy/planning');
+}
+
+export async function deleteOrganizationalValue(id: string) {
+    await prisma.organizationalValue.delete({
+        where: { id }
+    });
+    revalidatePath('/strategy/planning');
+}

@@ -94,10 +94,7 @@ export default function HomePageClient({ purpose }: HomePageClientProps) {
                 </Link>
             </div>
 
-            {/* STRATEGY CASCADE DASHBOARD */}
-            <div style={{ marginBottom: '4rem' }}>
-                <StrategyCascade purpose={purpose} />
-            </div>
+            {/* <StrategyCascade removed from Home Page as per request /> */}
 
             {/* MODULE GRID */}
             <div style={{
