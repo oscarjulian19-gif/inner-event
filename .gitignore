@@ -41,3 +41,20 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# Testing and diagnostic files
+test_*.js
+check_*.js
+debug_*.js
+verify_*.js
+apply_*.js
+inspect_*.js
+restore_*.js
+fix_*.js
+error_trigger.js
+full_rag_test.js
+*.txt
+*.bak
+.archive/
+cleanup.ps1
+CLEANUP_GUIDE.md

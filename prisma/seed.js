@@ -6,6 +6,7 @@ async function main() {
 
   // 1. Clean existing data (optional, but good for idempotency)
   // Note: Standard SQLite doesn't have CASCADE truncate, so we delete in order
+  // Delete in reverse order of dependencies
   await prisma.kanbanTask.deleteMany();
   await prisma.initiative.deleteMany();
   await prisma.keyResult.deleteMany();
@@ -16,6 +17,10 @@ async function main() {
   await prisma.team.deleteMany();
   await prisma.discProfile.deleteMany();
   await prisma.user.deleteMany();
+  
+  // Delete RAG documents before tenants (they have tenantId FK)
+  await prisma.document.deleteMany();
+  
   await prisma.tenant.deleteMany();
 
   // --- Helpers ---

@@ -3,12 +3,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { verifyLogin } from '@/app/actions';
+import { useRouter } from 'next/navigation';
 import styles from '@/app/strategy/page.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginPage() {
-    const { login } = useAuth();
+    const { isLoading } = useAuth();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     async function handleSubmit(formData: FormData) {
         setLoading(true);
@@ -24,7 +27,11 @@ export default function LoginPage() {
             }
 
             if (result.success && result.user) {
-                login(result.user);
+                localStorage.setItem('inner_event_user', JSON.stringify(result.user));
+
+                // Redirigir usando window.location para asegurar un refresco total
+                // y que el middleware vea las nuevas cookies inmediatamente
+                window.location.href = '/';
             }
         } catch (e) {
             setError('An error occurred. Please try again.');
@@ -38,75 +45,185 @@ export default function LoginPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'radial-gradient(circle at top left, #1e293b, #0f172a)'
+            background: '#04070d',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '3rem' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-                        <img src="/pragma-logo.png" alt="Pragma" style={{ height: '40px', width: 'auto' }} />
-                    </div>
-                    <h1 style={{
-                        fontSize: '2rem',
-                        marginBottom: '0.5rem',
-                        background: 'linear-gradient(to right, #fff, #94a3b8)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                    }}>
+            {/* Technological Background Layers */}
+            <div className="tech-grid" />
+
+            {/* Animated Glow Orbs (Antigravity Feel) */}
+            <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0.9, 0.6] }}
+                transition={{ duration: 8, repeat: Infinity }}
+                style={{
+                    position: 'absolute',
+                    top: '10%',
+                    right: '15%',
+                    width: '600px',
+                    height: '600px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(174, 100, 35, 0.4) 0%, transparent 70%)',
+                    filter: 'blur(80px) brightness(1.5)',
+                    zIndex: 1
+                }}
+            />
+            <motion.div
+                animate={{ scale: [1.3, 1, 1.3], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 10, repeat: Infinity }}
+                style={{
+                    position: 'absolute',
+                    bottom: '5%',
+                    left: '10%',
+                    width: '700px',
+                    height: '700px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(0, 102, 255, 0.25) 0%, transparent 70%)',
+                    filter: 'blur(100px) brightness(1.2)',
+                    zIndex: 1
+                }}
+            />
+
+            <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="glass-panel"
+                style={{
+                    width: '90%',
+                    maxWidth: '380px',
+                    padding: '2.5rem',
+                    zIndex: 10,
+                    boxShadow: '0 0 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'rgba(10, 15, 25, 0.7)'
+                }}
+            >
+                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                        style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}
+                    >
+                        <img src="/pragma-logo.png" alt="Pragma" style={{ height: '120px', width: 'auto', filter: 'drop-shadow(0 0 20px rgba(174,100,35,0.4))' }} />
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        style={{
+                            fontSize: '2.25rem',
+                            fontWeight: 700,
+                            marginBottom: '0.5rem',
+                            letterSpacing: '-0.02em',
+                            background: 'linear-gradient(to bottom, #fff 40%, rgba(255,255,255,0.7) 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}
+                    >
                         Inner Event
-                    </h1>
-                    <p style={{ color: 'hsl(var(--text-muted))' }}>Sign in to your organization</p>
+                    </motion.h1>
+                    <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Estrategia potenciada por IA</p>
                 </div>
 
-                <form action={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'hsl(var(--text-muted))' }}>Email</label>
+                <form action={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+                    <div style={{ position: 'relative' }}>
+                        <label style={{ display: 'block', marginBottom: '0.6rem', fontSize: '0.85rem', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>Email</label>
                         <input
                             name="email"
                             type="email"
                             required
-                            placeholder="name@company.com"
+                            placeholder="nombre@empresa.com"
                             className={styles.input}
-                            style={{ width: '100%' }}
+                            style={{
+                                width: '100%',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.15)',
+                                color: '#fff',
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                transition: 'all 0.3s ease'
+                            }}
                         />
                     </div>
 
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'hsl(var(--text-muted))' }}>Password</label>
+                    <div style={{ position: 'relative' }}>
+                        <label style={{ display: 'block', marginBottom: '0.6rem', fontSize: '0.85rem', fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>Password</label>
                         <input
                             name="password"
                             type="password"
                             required
                             defaultValue="12345"
                             className={styles.input}
-                            style={{ width: '100%' }}
+                            style={{
+                                width: '100%',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.15)',
+                                color: '#fff',
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                transition: 'all 0.3s ease'
+                            }}
                         />
                     </div>
 
-                    {error && (
-                        <div style={{ color: 'var(--danger)', fontSize: '0.9rem', textAlign: 'center' }}>
-                            {error}
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                style={{ color: '#ff4d4d', fontSize: '0.9rem', textAlign: 'center', background: 'rgba(255,77,77,0.1)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255,77,77,0.2)' }}
+                            >
+                                {error}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     <button
                         type="submit"
                         disabled={loading}
                         className="btn-primary"
-                        style={{ width: '100%', padding: '0.8rem', justifyContent: 'center' }}
+                        style={{
+                            width: '100%',
+                            padding: '1.1rem',
+                            justifyContent: 'center',
+                            fontSize: '1rem',
+                            background: 'white',
+                            color: '#000',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            boxShadow: '0 4px 20px rgba(255,255,255,0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            marginTop: '0.5rem'
+                        }}
                     >
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {loading ? 'Conectando...' : 'Iniciar Sesión'}
                     </button>
+
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>
+                            ¿No tienes cuenta? <a href="/signup" style={{ color: '#fff', fontWeight: 600, textDecoration: 'none' }}>Regístrate</a>
+                        </p>
+                    </div>
                 </form>
 
-                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', fontSize: '0.8rem', color: 'hsl(var(--text-muted))', textAlign: 'center' }}>
-                    <p>Test Credentials:</p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.5rem' }}>
-                        <code>william.galindo@compensar.com</code>
+                {/* Test Credentials Overlay - Discreto */}
+                <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+                    <p style={{ marginBottom: '0.5rem', fontWeight: 600 }}>ACCESO DE PRUEBA (SUPABASE)</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                         <code>oscar.gomez@ikusi.com</code>
-                        <code>Password: 12345</code>
+                        <code>test@pragma.com</code>
+                        <code>Password: password123</code>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

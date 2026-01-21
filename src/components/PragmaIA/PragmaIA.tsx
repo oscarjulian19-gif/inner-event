@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Send, Bot } from 'lucide-react';
+import { useAuth } from '@/lib/auth/AuthContext';
 import styles from './PragmaIA.module.css';
 
 interface Message {
@@ -12,6 +13,7 @@ interface Message {
 }
 
 export default function PragmaIA() {
+    const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         { role: 'ai', content: '¡Hola! Soy PRAGM-IA 🪐. Estoy monitoreando tus sistemas. ¿En qué puedo ayudarte a mejorar tu estrategia hoy?' }
@@ -31,8 +33,10 @@ export default function PragmaIA() {
         if (!input.trim() || isLoading) return;
 
         const userMsg = input.trim();
+        const updatedMessages: Message[] = [...messages, { role: 'user', content: userMsg }];
+
         setInput('');
-        setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+        setMessages(updatedMessages);
         setIsLoading(true);
 
         try {
@@ -41,6 +45,7 @@ export default function PragmaIA() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: userMsg,
+                    history: updatedMessages, // Send full history
                     context: `Current Path: ${pathname}`
                 })
             });
@@ -60,6 +65,11 @@ export default function PragmaIA() {
             setIsLoading(false);
         }
     };
+
+    // Only show PragmaIA if user is logged in
+    if (!user) {
+        return null;
+    }
 
     return (
         <div className={styles.container}>

@@ -2,8 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
-interface User {
+// Extendemos el usuario de Supabase con los datos de nuestra DB si es necesario
+interface UserProfile {
     id: string;
     name: string;
     email: string;
@@ -14,45 +17,86 @@ interface User {
 }
 
 interface AuthContextType {
-    user: User | null;
-    login: (userData: User) => void;
-    logout: () => void;
+    user: UserProfile | null;
+    supabaseUser: SupabaseUser | null;
+    logout: () => Promise<void>;
     isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
+    const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const supabase = createClient();
 
     useEffect(() => {
-        // Check localStorage on mount
-        const storedUser = localStorage.getItem('inner_event_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
-    }, []);
+        const fetchSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
 
-    const login = (userData: User) => {
-        setUser(userData);
-        localStorage.setItem('inner_event_user', JSON.stringify(userData));
-        router.push('/');
-    };
+            if (session?.user) {
+                setSupabaseUser(session.user);
+                // Si tienes un perfil guardado en localStorage o DB, lo cargamos
+                const storedProfile = localStorage.getItem('inner_event_user');
+                if (storedProfile) {
+                    try {
+                        setUser(JSON.parse(storedProfile));
+                    } catch (e) {
+                        console.error('Error parsing stored profile', e);
+                    }
+                }
+            } else {
+                setSupabaseUser(null);
+                setUser(null);
+            }
+            setIsLoading(false);
+        };
 
-    const logout = () => {
+        fetchSession();
+
+        // Escuchar cambios de estado (login/logout)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log(`Auth event: ${event}`);
+
+            if (session?.user) {
+                setSupabaseUser(session.user);
+                // Si acabamos de loguearnos, intentar recuperar el perfil del localStorage
+                const storedProfile = localStorage.getItem('inner_event_user');
+                if (storedProfile) {
+                    try {
+                        setUser(JSON.parse(storedProfile));
+                    } catch (e) {
+                        console.error('Error parsing stored profile on auth change', e);
+                    }
+                }
+            } else {
+                setSupabaseUser(null);
+                setUser(null);
+                localStorage.removeItem('inner_event_user');
+            }
+
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                setIsLoading(false);
+                router.refresh();
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase.auth, router]);
+
+    const logout = async () => {
+        await supabase.auth.signOut();
         setUser(null);
+        setSupabaseUser(null);
         localStorage.removeItem('inner_event_user');
-        // Also clear cookies via server action ideally, but for now client side is main driver for Redirect
-        document.cookie = "inner_event_tenant=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "inner_event_user_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        router.refresh(); // Refrescar para que el middleware actúe
         router.push('/login');
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, supabaseUser, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

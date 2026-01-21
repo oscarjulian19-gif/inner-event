@@ -77,8 +77,8 @@ export default function HomePageClient({ purpose }: HomePageClientProps) {
     }
 
     return (
-        <main className={styles.container} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingTop: '4rem' }}>
-            <div className={styles.homeUserInfo}>
+        <main className={styles.container} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingTop: '6rem', position: 'relative' }}>
+            <div className={styles.homeUserInfo} style={{ zIndex: 10 }}>
                 <div style={{ color: 'white', textAlign: 'right' }}>
                     <div style={{ fontWeight: 'bold' }}>{user.name}</div>
                     <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{user.tenantName}</div>
@@ -88,7 +88,7 @@ export default function HomePageClient({ purpose }: HomePageClientProps) {
             </div>
 
             {/* Header Section - Wrapped in White Panel for Visibility & "Tranquility" */}
-            <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center', width: '100%', maxWidth: '800px', margin: '0 auto 2rem auto', display: 'flex', justifyContent: 'center' }}>
+            <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem', textAlign: 'center', width: '100%', maxWidth: '800px', margin: '1rem auto 2rem auto', display: 'flex', justifyContent: 'center' }}>
                 <Link href="/" style={{ display: 'block', width: '100%' }}>
                     <img src="/pragma-logo.png" alt="PRAGMA - Donde la estrategia pasa" style={{ maxWidth: '400px', width: '100%', height: 'auto' }} />
                 </Link>

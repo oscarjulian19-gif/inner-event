@@ -7,34 +7,35 @@ import { cookies } from 'next/headers';
 
 // --- Auth ---
 
+import { createClient } from '@/lib/supabase/server';
+
 export async function verifyLogin(formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    // Type casting to Bypass standard Prisma types which might exclude password?
-    // Actually, password should be in the model. Let me cast to any for quick fix if types are lagging.
+    const supabase = await createClient();
+
+    // 1. Autenticar con Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error || !data.user) {
+        return { error: 'Invalid credentials or login failed.' };
+    }
+
+    // 2. Obtener el perfil extendido de Prisma usando el email
     const user = await prisma.user.findUnique({
-        where: { email },
+        where: { email: data.user.email },
         include: { tenant: true }
     });
 
-    // Note: In real app, password should be hashed. Here we check plain text if model supports it, 
-    // or assume we need to add password field to schema if missing. 
-    // For now assuming the User model HAS a password field but Prisma types might need generation.
-    // We will use (user as any).password to be safe with strict mode if the field is missing in types but present in DB.
-    // Ideally, we add password to schema. 
-    // Let's assume it is there.
-
-    if (!user || (user as any).password !== password) {
-        return { error: 'Invalid credentials' };
+    if (!user) {
+        return { error: 'User authenticated in Supabase but not found in Pragma DB.' };
     }
 
-    // Determine Tenant (In MVP, User belongs to one Tenant)
-    // If strict domain check is needed:
-    // const emailDomain = email.split('@')[1];
-    // if (user.tenant.domain !== emailDomain) { ... }
-
-    // Set Cookies for Server Components
+    // 3. Set Cookies de Legacy por compatibilidad momentánea (el middleware de Supabase gestiona la sesión real)
     const cookieStore = await cookies();
     cookieStore.set('inner_event_user_id', user.id, { path: '/' });
     cookieStore.set('inner_event_tenant_id', user.tenantId, { path: '/' });
@@ -53,12 +54,98 @@ export async function verifyLogin(formData: FormData) {
     };
 }
 
+export async function signUpUser(formData: FormData) {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const name = formData.get('name') as string;
+    const companyName = formData.get('companyName') as string;
+
+    const emailDomain = email.split('@')[1];
+    const supabase = await createClient();
+
+    try {
+        // 1. Manejo de Organización (Tenant)
+        // Buscamos si ya existe una organización con ese dominio
+        let tenant = await prisma.tenant.findUnique({
+            where: { domain: emailDomain }
+        });
+
+        if (!tenant) {
+            // Si no existe, creamos una nueva organización
+            tenant = await prisma.tenant.create({
+                data: {
+                    name: companyName || emailDomain.split('.')[0].toUpperCase(),
+                    domain: emailDomain,
+                }
+            });
+            console.log(`[Signup] New Tenant created: ${tenant.name}`);
+        }
+
+        // 2. Registro en Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                    tenant_id: tenant.id
+                }
+            }
+        });
+
+        if (authError) throw authError;
+        if (!authData.user) throw new Error("Could not create auth user");
+
+        // 3. Registro en nuestra Base de Datos (Prisma)
+        const newUser = await prisma.user.create({
+            data: {
+                email: email,
+                name: name,
+                tenantId: tenant.id,
+                role: 'USER',
+                password: password // Guardamos por compatibilidad con el sistema legacy
+            },
+            include: { tenant: true }
+        });
+
+        return { 
+            success: true, 
+            message: "User created successfully. Please check your email if confirmation is required.",
+            user: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                tenantName: newUser.tenant.name
+            }
+        };
+
+    } catch (error: any) {
+        console.error("[Signup Error]", error);
+        return { error: error.message || "An error occurred during signup" };
+    }
+}
+
 // Helper to get Tenant ID
 async function getTenantId() {
-    const cookieStore = await cookies();
-    const tenantId = cookieStore.get('inner_event_tenant_id')?.value;
-    if (!tenantId) throw new Error('Unauthorized');
-    return tenantId;
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        // Fallback cookies for transitions or dev
+        const cookieStore = await cookies();
+        const tenantId = cookieStore.get('inner_event_tenant_id')?.value;
+        if (!tenantId) throw new Error('Unauthorized');
+        return tenantId;
+    }
+
+    // Si hay usuario de Supabase, buscamos su tenant en Prisma
+    const dbUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: { tenantId: true }
+    });
+
+    if (!dbUser) throw new Error('User context not found in database');
+    return dbUser.tenantId;
 }
 
 export async function createUser(formData: FormData) {
